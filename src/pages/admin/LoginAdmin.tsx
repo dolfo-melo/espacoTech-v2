@@ -3,7 +3,7 @@ import { supabase } from '../../lib/supabase'
 import { useNavigate } from 'react-router-dom'
 import { TextField, Button, Card, Typography, Alert } from '@mui/material'
 
-export default function Login() {
+export default function LoginAdmin() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')

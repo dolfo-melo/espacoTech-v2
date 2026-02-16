@@ -34,5 +34,5 @@ export default function AdminRoute() {
   }
 
   // Se for admin, mostra o conteúdo (Outlet). Se não, manda pro Login.
-  return isAdmin ? <Outlet /> : <Navigate to="/login" replace />
+  return isAdmin ? <Outlet /> : <Navigate to="/loginAdmin" replace />
 }
