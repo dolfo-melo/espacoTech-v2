@@ -57,7 +57,6 @@ export default function BookingForm({ roomId, userId }: { roomId: number, userId
       <TextField
         type="date"
         label="Data"
-        InputLabelProps={{ shrink: true }}
         value={selectedDate}
         onChange={(e) => setSelectedDate(e.target.value)}
         fullWidth
