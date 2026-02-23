@@ -54,7 +54,7 @@ export default function Login(){
                 if(profile?.role === "admin"){
                     navigate("/admin")
                 } else {
-                    // Usuário Padrão
+                // Usuário Padrão
                     navigate("/")                    
                 }
               }
