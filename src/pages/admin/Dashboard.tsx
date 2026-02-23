@@ -1,169 +1,158 @@
 import { useState } from 'react'
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useNavigate } from 'react-router-dom'
+import { useQuery } from '@tanstack/react-query'
 import { supabase } from '../../lib/supabase'
 import { 
-  Button, Table, TableBody, TableCell, TableHead, TableRow, 
-  Paper, IconButton, Dialog, DialogTitle, DialogContent, TextField, DialogActions 
-} from '@mui/material'
-import DeleteIcon from '@mui/icons-material/Delete'
-import EditIcon from '@mui/icons-material/Edit'
-import AddIcon from '@mui/icons-material/Add'
-
-// Interface TypeScript
-interface Room {
-  id: number
-  name: string
-  price: number
-  description: string
-}
+  AppBar, Toolbar, Typography, Button, Tabs, Tab, Box, Paper, Table, 
+  TableHead, TableRow, TableCell, TableBody, CircularProgress 
+} from '@mui/material';
+import LogoutIcon from '@mui/icons-material/Logout'
 
 export default function Dashboard() {
-  const queryClient = useQueryClient()
-  const [open, setOpen] = useState(false)
-  const [editRoom, setEditRoom] = useState<Room | null>(null) // Se null, é criação. Se tem objeto, é edição.
+  const navigate = useNavigate();
   
-  // Estado do formulário
-  const [formData, setFormData] = useState({ name: '', price: '', description: '' })
+  const [currentTab, setCurrentTab] = useState(0)
 
-  // === 1. LEITURA (READ) ===
-  const { data: rooms, isLoading } = useQuery({
+  // LOGOUT
+  const handleLogout = async () => {
+    await supabase.auth.signOut()
+    navigate('/login')
+  };
+
+  // BUSCAS DE DADOS (TanStack Query)
+  // Busca de Salas
+  const { data: rooms, isLoading: loadingRooms } = useQuery({
     queryKey: ['admin-rooms'],
     queryFn: async () => {
-      const { data, error } = await supabase.from('rooms').select('*').order('id')
+      const { data, error } = await supabase.from('rooms').select('*')
       if (error) throw error
-      return data as Room[]
+      return data
     }
-  })
+  });
 
-  // === 2. CRIAÇÃO/EDIÇÃO (UPSERT) ===
-  const mutation = useMutation({
-    mutationFn: async (newRoom: any) => {
-      // Se tiver ID, atualiza. Se não, cria.
-      const { error } = await supabase.from('rooms').upsert(newRoom)
+  // Busca de Reservas
+  const { data: bookings, isLoading: loadingBookings } = useQuery({
+    queryKey: ['admin-bookings'],
+    queryFn: async () => {
+     
+      const { data, error } = await supabase
+        .from('bookings')
+        .select(`
+          id, date, start_time, end_time,
+          profiles (nome, email),
+          rooms (name)
+        `);
       if (error) throw error
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-rooms'] }) // Atualiza a lista
-      handleClose()
+      return data
     }
-  })
+  });
 
-  // === 3. DELEÇÃO (DELETE) ===
-  const deleteMutation = useMutation({
-    mutationFn: async (id: number) => {
-      const { error } = await supabase.from('rooms').delete().eq('id', id)
+  // Busca de Usuários
+  const { data: users, isLoading: loadingUsers } = useQuery({
+    queryKey: ['admin-users'],
+    queryFn: async () => {
+      const { data, error } = await supabase.from('profiles').select('*')
       if (error) throw error
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-rooms'] })
+      return data
     }
-  })
+  });
 
-  // === HANDLERS ===
-  const handleOpen = (room?: Room) => {
-    if (room) {
-      setEditRoom(room)
-      setFormData({ name: room.name, price: String(room.price), description: room.description || '' })
-    } else {
-      setEditRoom(null)
-      setFormData({ name: '', price: '', description: '' })
+  // === RENDERIZAÇÃO DAS ABAS ===
+  const renderContent = () => {
+    if (currentTab === 0) {
+      // TAB: SALAS
+      return (
+        <Paper className="p-4 mt-4">
+          <Typography variant="h6" className="mb-4">Gerenciar Salas</Typography>
+          {loadingRooms ? <CircularProgress /> : (
+            <Table>
+              <TableHead><TableRow><TableCell>ID</TableCell><TableCell>Nome</TableCell><TableCell>Preço</TableCell></TableRow></TableHead>
+              <TableBody>
+                {rooms?.map((room: any) => (
+                  <TableRow key={room.id}>
+                    <TableCell>{room.id}</TableCell>
+                    <TableCell>{room.name}</TableCell>
+                    <TableCell>R$ {room.price}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
+          <Button variant="contained" sx={{ mt: 2 }}>+ Nova Sala</Button>
+        </Paper>
+      );
+    } 
+    
+    if (currentTab === 1) {
+      // TAB: RESERVAS
+      return (
+        <Paper className="p-4 mt-4">
+          <Typography variant="h6" className="mb-4">Histórico de Reservas</Typography>
+          {loadingBookings ? <CircularProgress /> : (
+            <Table>
+              <TableHead><TableRow><TableCell>ID</TableCell><TableCell>Sala</TableCell><TableCell>Usuário</TableCell><TableCell>Data/Hora</TableCell></TableRow></TableHead>
+              <TableBody>
+                {bookings?.map((booking: any) => (
+                  <TableRow key={booking.id}>
+                    <TableCell>{booking.id}</TableCell>
+                    <TableCell>{booking.rooms?.name}</TableCell>
+                    <TableCell>{booking.profiles?.nome || booking.profiles?.email}</TableCell>
+                    <TableCell>{booking.date} ({booking.start_time} - {booking.end_time})</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
+        </Paper>
+      );
     }
-    setOpen(true)
-  }
 
-  const handleClose = () => setOpen(false)
-
-  const handleSave = () => {
-    const payload = {
-      ...(editRoom?.id && { id: editRoom.id }), // Só manda ID se for edição
-      name: formData.name,
-      price: Number(formData.price),
-      description: formData.description
+    if (currentTab === 2) {
+      // TAB: USUÁRIOS
+      return (
+        <Paper className="p-4 mt-4">
+          <Typography variant="h6" className="mb-4">Gerenciar Usuários</Typography>
+          {loadingUsers ? <CircularProgress /> : (
+            <Table>
+              <TableHead><TableRow><TableCell>ID</TableCell><TableCell>Nome</TableCell><TableCell>Função (Role)</TableCell></TableRow></TableHead>
+              <TableBody>
+                {users?.map((user: any) => (
+                  <TableRow key={user.id}>
+                    <TableCell>{user.id.substring(0, 8)}...</TableCell>
+                    <TableCell>{user.nome || 'Sem nome'}</TableCell>
+                    <TableCell>{user.role === 'admin' ? 'Administrador' : 'Cliente'}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
+        </Paper>
+      );
     }
-    mutation.mutate(payload)
-  }
-
-  const handleDelete = (id: number) => {
-    if (confirm('Tem certeza que deseja excluir esta sala?')) {
-      deleteMutation.mutate(id)
-    }
-  }
+  };
 
   return (
-    <div className="p-8 bg-gray-50 min-h-screen">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold text-gray-800">Gerenciar Salas</h1>
-        <Button 
-          variant="contained" 
-          startIcon={<AddIcon />} 
-          onClick={() => handleOpen()}
-          className="bg-green-600 hover:bg-green-700"
-        >
-          Nova Sala
-        </Button>
-      </div>
+    <Box sx={{ flexGrow: 1, bgcolor: '#f5f5f5', minHeight: '100vh' }}>
+      
+      <AppBar position="static" color="primary">
+          <Typography variant="h6" component="div" sx={{ flexGrow: 1, textAlign: 'center', fontWeight: 'bold' }}>
+            Admin Hub - Coworking Space
+          </Typography>
+      </AppBar>
 
-      {/* Tabela de Listagem */}
-      <Paper elevation={2}>
-        <Table>
-          <TableHead className="bg-gray-200">
-            <TableRow>
-              <TableCell>ID</TableCell>
-              <TableCell>Nome</TableCell>
-              <TableCell>Preço/h</TableCell>
-              <TableCell>Descrição</TableCell>
-              <TableCell align="right">Ações</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {isLoading ? <TableRow><TableCell>Carregando...</TableCell></TableRow> : 
-             rooms?.map((room) => (
-              <TableRow key={room.id} hover>
-                <TableCell>{room.id}</TableCell>
-                <TableCell className="font-semibold">{room.name}</TableCell>
-                <TableCell>R$ {room.price}</TableCell>
-                <TableCell>{room.description}</TableCell>
-                <TableCell align="right">
-                  <IconButton color="primary" onClick={() => handleOpen(room)}>
-                    <EditIcon />
-                  </IconButton>
-                  <IconButton color="error" onClick={() => handleDelete(room.id)}>
-                    <DeleteIcon />
-                  </IconButton>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </Paper>
+      {/* SISTEMA DE NAVEGAÇÃO ENTRE AS TABELAS */}
+      <Box sx={{ width: '100%', bgcolor: 'background.paper', borderBottom: 1, borderColor: 'divider' }}>
+        <Tabs value={currentTab} onChange={(_e, newValue) => setCurrentTab(newValue)} centered>
+          <Tab label="Salas" />
+          <Tab label="Reservas" />
+          <Tab label="Usuários" />
+        </Tabs>
+      </Box>
 
-      {/* Modal de Formulário */}
-      <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm">
-        <DialogTitle>{editRoom ? 'Editar Sala' : 'Cadastrar Nova Sala'}</DialogTitle>
-        <DialogContent className="flex flex-col gap-4 mt-2">
-          <TextField 
-            label="Nome da Sala" fullWidth 
-            value={formData.name} 
-            onChange={e => setFormData({...formData, name: e.target.value})} 
-          />
-          <TextField 
-            label="Preço por Hora" type="number" fullWidth 
-            value={formData.price} 
-            onChange={e => setFormData({...formData, price: e.target.value})} 
-          />
-          <TextField 
-            label="Descrição" multiline rows={3} fullWidth 
-            value={formData.description} 
-            onChange={e => setFormData({...formData, description: e.target.value})} 
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose}>Cancelar</Button>
-          <Button onClick={handleSave} variant="contained" color="primary">
-            Salvar
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </div>
-  )
+      {/* ÁREA DE CONTEÚDO */}
+      <Box sx={{ p: 4, maxWidth: '1200px', margin: '0 auto' }}>
+        {renderContent()}
+      </Box>
+    </Box>
+  );
 }
