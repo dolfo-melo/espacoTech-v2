@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Link } from 'react-router-dom'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import Home from './pages/public/Home'
 import Dashboard from './pages/admin/Dashboard'
 import AdminRoute from './components/AdminRouter'
@@ -29,11 +29,7 @@ export default function App() {
           <Route element={<AdminRoute />}>
             <Route path="/admin" element={<Dashboard />} />
           </Route>
-        </Routes>
-
-        <footer className="space-x-3">
-          <Link to="/login" className="text-blue-700">Área Admin</Link>
-        </footer>
+        </Routes> 
       </BrowserRouter>
     </ThemeProvider>
   )

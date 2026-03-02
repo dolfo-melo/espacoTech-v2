@@ -74,7 +74,7 @@ export default function Login(){
                         <CardContent sx={{ display: 'flex', flexDirection: 'column', gap: 2, p: 4 }}>
             
                             <Typography variant="h4" component="h1" align="center" fontWeight="bold" color="primary">
-                                {isSignUp ? 'Criar Conta' : 'Bem-vindo'}
+                                {isSignUp ? 'Criar Conta' : 'Bem-vindo ao  Espaço Tech'}
                             </Typography>
             
                             <Typography variant="body2" align="center" color="text.secondary" sx={{ mb: 2 }}>

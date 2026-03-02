@@ -1,23 +1,14 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { supabase } from '../../lib/supabase'
 import { 
-  AppBar, Toolbar, Typography, Button, Tabs, Tab, Box, Paper, Table, 
+  AppBar, Typography, Button, Tabs, Tab, Box, Paper, Table, 
   TableHead, TableRow, TableCell, TableBody, CircularProgress 
 } from '@mui/material';
-import LogoutIcon from '@mui/icons-material/Logout'
 
 export default function Dashboard() {
-  const navigate = useNavigate();
   
   const [currentTab, setCurrentTab] = useState(0)
-
-  // LOGOUT
-  const handleLogout = async () => {
-    await supabase.auth.signOut()
-    navigate('/login')
-  };
 
   // BUSCAS DE DADOS (TanStack Query)
   // Busca de Salas
