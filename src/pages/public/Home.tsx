@@ -1,5 +1,5 @@
 import './home.css'
-import { Button, Box} from '@mui/material';
+import { Button, Box} from '@mui/material'
 
 export default function Home(){
     return(
@@ -19,10 +19,10 @@ export default function Home(){
             </div>
 
             <div className="relative z-10 h-full flex flex-col justify-center px-10 md:px-20 lg:px-40">
-            <h1 className="text-white text-7xl md:text-9xl font-bold leading-tight">
+            <h1 className="text-white text-7xl sm:text-8xl md:text-9xl font-bold leading-tight">
                 Espaço
             </h1>
-            <h1 className="text-[#ffa726] text-7xl md:text-9xl font-bold leading-tight drop-shadow-2xl">
+            <h1 className="text-[#ffa726] text-7xl sm:text-8xl md:text-9xl font-bold leading-tight drop-shadow-2xl">
                 Tech
             </h1>
             

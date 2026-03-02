@@ -68,8 +68,17 @@ export default function Login(){
         } 
         
         return(
-            <div className="flex min-h-screen items-center justify-center bg-gray-100">
-                <Container maxWidth="xs">
+            <div className="flex min-h-screen items-center justify-center">
+
+                <div className="absolute inset-0 z-[-1]">
+                    <img 
+                        src="src\assets\espacoTechBackground.png" 
+                        className="w-full h-full object-cover" 
+                        alt="Espaço Tech Background" 
+                    />
+                </div>
+                
+                <Container maxWidth="xs" sx={{height: 'fit-content'}}>
                     <Card sx={{ boxShadow: 3, borderRadius: 2 }}>
                         <CardContent sx={{ display: 'flex', flexDirection: 'column', gap: 2, p: 4 }}>
             

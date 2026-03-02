@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabase'
 import BookingModal from './BookingModal'
 import {AppBar, Toolbar, Typography, Button, Menu, MenuItem, Avatar, Box, Divider} from '@mui/material'
 import {createTheme, colors, ThemeProvider} from '@mui/material'
+import LoginIcon from '@mui/icons-material/Login'
 
 export default function Navbar() {
   const navigate = useNavigate()
@@ -61,7 +62,7 @@ export default function Navbar() {
   const theme = createTheme({
     palette: {
       primary: {
-        main: colors.indigo[700]
+        main: colors.blue[900]
       },
       secondary: {
         main: colors.orange[500]
@@ -138,11 +139,11 @@ export default function Navbar() {
               </Box>
             ) : (
               <Box display="flex" gap={1}>
-                <Button color="secondary" component={Link} to="/login">
+                {/* <Button color="secondary" component={Link} to="/login" style={{fontWeight: "bold", fontSize: "1rem"}}>
                   Entrar
-                </Button>
+                </Button> */}
                 <Button variant="contained" color="secondary" component={Link} to="/login" state={{ isSignUp: true }}>
-                  Criar Conta
+                  <LoginIcon sx={{ marginRight: 0.5, width: 24, height: 24}} />
                 </Button>
               </Box>
             )}
