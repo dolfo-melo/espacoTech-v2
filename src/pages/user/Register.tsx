@@ -1,113 +1,204 @@
 import { useState } from "react"
 import { supabase } from "../../lib/supabase"
 import { useNavigate } from "react-router-dom"
-import { Container, Card, CardContent, Typography, TextField, Button, Alert, Link } from "@mui/material"
+import {
+  Container,
+  Card,
+  CardContent,
+  Typography,
+  TextField,
+  Button,
+  Alert,
+  Link,
+  Box
+} from "@mui/material"
 
 export function Register(){
 
-    const navigate = useNavigate()
+  const navigate = useNavigate()
 
-    const [loading, setLoading] = useState(false)
-    const [name, setName] = useState("")
-    const [email, setEmail] = useState("")
-    const [password, setPassword] = useState("")
-    const [errorMsg, setErrorMsg] = useState("")
+  const [loading, setLoading] = useState(false)
+  const [name, setName] = useState("")
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [errorMsg, setErrorMsg] = useState("")
 
-    const handleRegister = async (e: React.FormEvent) => {
+  const handleRegister = async (e: React.FormEvent) => {
 
-        e.preventDefault()
-        setLoading(true)
-        setErrorMsg("")
+    e.preventDefault()
+    setLoading(true)
+    setErrorMsg("")
 
-        try {
+    try {
 
-            const { error } = await supabase.auth.signUp({
-                email,
-                password,
-                options: {
-                    data: { nome: name }
-                }
-            })
-
-            if (error) throw error
-
-            alert("Cadastro realizado! Faça login.")
-            navigate("/login")
-
-        } catch (error:any) {
-            setErrorMsg(error.message || "Erro ao cadastrar")
-        } finally {
-            setLoading(false)
+      const { error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: { nome: name }
         }
+      })
+
+      if (error) throw error
+
+      alert("Cadastro realizado! Faça login.")
+      navigate("/login")
+
+    } catch (error:any) {
+      setErrorMsg(error.message || "Erro ao cadastrar")
+    } finally {
+      setLoading(false)
     }
+  }
 
-    return (
-        <div className="flex min-h-screen items-center justify-center">
+  return (
 
-            <div className="absolute inset-0 z-[-1]">
-                <img 
-                    src="src/assets/espacoTechBackground.png"
-                    className="w-full h-full object-cover"
-                />
-            </div>
+    <Box
+      sx={{
+        minHeight: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        backgroundImage: "url('/src/assets/espacoTechBackground.png')",
+        backgroundSize: "cover",
+        backgroundPosition: "center"
+      }}
+    >
 
-            <Container maxWidth="xs">
+      <Container maxWidth="xs">
 
-                <Card sx={{ boxShadow: 3, borderRadius: 2 }}>
-                    <CardContent sx={{ display: 'flex', flexDirection: 'column', gap: 2, p: 4 }}>
+        <Card
+          sx={{
+            backdropFilter: "blur(12px)",
+            backgroundColor: "rgba(255,255,255,0.75)",
+            borderRadius: "24px",
+            boxShadow: "0 10px 40px rgba(0,0,0,0.2)"
+          }}
+        >
 
-                        <Typography variant="h4" align="center" fontWeight="bold" color="primary">
-                            Criar Conta
-                        </Typography>
+          <CardContent
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              gap: 3,
+              p: 5
+            }}
+          >
 
-                        {errorMsg && <Alert severity="error">{errorMsg}</Alert>}
+            <Box textAlign="center">
+              <img
+                src="../public/logoEspacoTech.png"
+                style={{ width: 70 }}
+              />
+            </Box>
 
-                        <form onSubmit={handleRegister} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            <Typography
+              variant="h4"
+              align="center"
+              fontWeight="bold"
+              color="#1F3C88"
+            >
+              Criar Conta
+            </Typography>
 
-                            <TextField
-                                label="Nome"
-                                required
-                                value={name}
-                                onChange={(e)=>setName(e.target.value)}
-                            />
+            {errorMsg && <Alert severity="error">{errorMsg}</Alert>}
 
-                            <TextField
-                                label="Email"
-                                type="email"
-                                required
-                                value={email}
-                                onChange={(e)=>setEmail(e.target.value)}
-                            />
+            <form
+              onSubmit={handleRegister}
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: 20
+              }}
+            >
 
-                            <TextField
-                                label="Senha"
-                                type="password"
-                                required
-                                value={password}
-                                onChange={(e)=>setPassword(e.target.value)}
-                            />
+              <TextField
+                label="Nome"
+                variant="outlined"
+                fullWidth
+                required
+                value={name}
+                onChange={(e)=>setName(e.target.value)}
+                sx={{
+                  "& .MuiOutlinedInput-root": {
+                    borderRadius: "30px"
+                  },
+                  "& .MuiOutlinedInput-notchedOutline": {
+                    borderColor: "#E9A84A"
+                  }
+                }}
+              />
 
-                            <Button
-                                type="submit"
-                                variant="contained"
-                                fullWidth
-                                disabled={loading}
-                            >
-                                {loading ? "Carregando..." : "Cadastrar"}
-                            </Button>
+              <TextField
+                label="Email"
+                type="email"
+                variant="outlined"
+                fullWidth
+                required
+                value={email}
+                onChange={(e)=>setEmail(e.target.value)}
+                sx={{
+                  "& .MuiOutlinedInput-root": {
+                    borderRadius: "30px"
+                  },
+                  "& .MuiOutlinedInput-notchedOutline": {
+                    borderColor: "#E9A84A"
+                  }
+                }}
+              />
 
-                        </form>
+              <TextField
+                label="Senha"
+                type="password"
+                variant="outlined"
+                fullWidth
+                required
+                value={password}
+                onChange={(e)=>setPassword(e.target.value)}
+                sx={{
+                  "& .MuiOutlinedInput-root": {
+                    borderRadius: "30px"
+                  },
+                  "& .MuiOutlinedInput-notchedOutline": {
+                    borderColor: "#E9A84A"
+                  }
+                }}
+              />
 
-                        <div className="text-center">
-                            <Link href="/login">
-                                Já tem conta? Faça login
-                            </Link>
-                        </div>
+              <Button
+                type="submit"
+                fullWidth
+                disabled={loading}
+                sx={{
+                  borderRadius: "30px",
+                  py: 1.5,
+                  fontWeight: "bold",
+                  backgroundColor: "#E9A84A",
+                  color: "#000",
+                  "&:hover": {
+                    backgroundColor: "#1F3C88",
+                    color: "#fff"
+                  }
+                }}
+              >
+                {loading ? "Carregando..." : "Cadastrar"}
+              </Button>
 
-                    </CardContent>
-                </Card>
+            </form>
 
-            </Container>
-        </div>
-    )
+            <Typography variant="body2" align="center">
+              Já tem conta?{" "}
+              <Link href="/login">
+                Faça login
+              </Link>
+            </Typography>
+
+          </CardContent>
+
+        </Card>
+
+      </Container>
+
+    </Box>
+  )
 }

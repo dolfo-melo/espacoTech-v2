@@ -1,118 +1,198 @@
 import { useState } from "react"
 import { supabase } from "../../lib/supabase"
 import { useNavigate } from "react-router-dom"
-import { Container, Card, CardContent, Typography, TextField, Button, Alert, Link } from "@mui/material"
+import {
+  Container,
+  Card,
+  CardContent,
+  Typography,
+  TextField,
+  Button,
+  Alert,
+  Link,
+  Box
+} from "@mui/material"
 
 export function Login(){
 
-    const navigate = useNavigate()
+  const navigate = useNavigate()
 
-    const [loading, setLoading] = useState(false)
-    const [email, setEmail] = useState("")
-    const [password, setPassword] = useState("")
-    const [errorMsg, setErrorMsg] = useState("")
+  const [loading, setLoading] = useState(false)
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [errorMsg, setErrorMsg] = useState("")
 
-    const handleLogin = async (e: React.FormEvent) => {
-        e.preventDefault()
-        setLoading(true)
-        setErrorMsg("")
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setLoading(true)
+    setErrorMsg("")
 
-        try {
+    try {
 
-            const { data, error } = await supabase.auth.signInWithPassword({
-                email,
-                password
-            })
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password
+      })
 
-            if (error) throw error
+      if (error) throw error
 
-            if (data.user) {
+      if (data.user) {
 
-                const { data: profile } = await supabase
-                .from("profiles")
-                .select("role")
-                .eq("id", data.user.id)
-                .single()
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("role")
+          .eq("id", data.user.id)
+          .single()
 
-                if(profile?.role === "admin"){
-                    navigate("/admin")
-                } else {
-                    navigate("/")
-                }
-
-            }
-
-        } catch (error: any) {
-            setErrorMsg(error.message || "Erro ao realizar login")
-        } finally {
-            setLoading(false)
+        if(profile?.role === "admin"){
+          navigate("/admin")
+        } else {
+          navigate("/")
         }
+
+      }
+
+    } catch (error:any) {
+      setErrorMsg(error.message || "Erro ao realizar login")
+    } finally {
+      setLoading(false)
     }
+  }
 
-    return (
-        <div className="flex min-h-screen items-center justify-center">
+  return (
 
-            <div className="absolute inset-0 z-[-1]">
-                <img 
-                    src="src/assets/espacoTechBackground.png"
-                    className="w-full h-full object-cover"
-                />
-            </div>
+    <Box
+      sx={{
+        minHeight: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        backgroundImage: "url('/src/assets/espacoTechBackground.png')",
+        backgroundSize: "cover",
+        backgroundPosition: "center"
+      }}
+    >
 
-            <Container maxWidth="xs">
+      <Container maxWidth="xs">
 
-                <Card sx={{ boxShadow: 3, borderRadius: 2 }}>
-                    <CardContent sx={{ display: 'flex', flexDirection: 'column', gap: 2, p: 4 }}>
+        <Card
+          sx={{
+            backdropFilter: "blur(12px)",
+            backgroundColor: "rgba(255,255,255,0.75)",
+            borderRadius: "24px",
+            boxShadow: "0 10px 40px rgba(0,0,0,0.2)"
+          }}
+        >
 
-                        <Typography variant="h4" align="center" fontWeight="bold" color="primary">
-                            Bem-vindo ao Espaço Tech
-                        </Typography>
+          <CardContent
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              gap: 3,
+              p: 5
+            }}
+          >
 
-                        <Typography variant="body2" align="center" color="text.secondary">
-                            Faça login para continuar
-                        </Typography>
+            <Box textAlign="center">
+              <img
+                src="../public/logoEspacoTech.png"
+                style={{ width: 70 }}
+              />
+            </Box>
+            
+            <Typography
+              variant="h4"
+              align="center"
+              fontWeight="bold"
+              color="#1F3C88"
+            >
+              Login
+            </Typography>
 
-                        {errorMsg && <Alert severity="error">{errorMsg}</Alert>}
 
-                        <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            {errorMsg && <Alert severity="error">{errorMsg}</Alert>}
 
-                            <TextField
-                                label="Email"
-                                type="email"
-                                required
-                                value={email}
-                                onChange={(e)=>setEmail(e.target.value)}
-                            />
+            <form
+              onSubmit={handleLogin}
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: 20
+              }}
+            >
 
-                            <TextField
-                                label="Senha"
-                                type="password"
-                                required
-                                value={password}
-                                onChange={(e)=>setPassword(e.target.value)}
-                            />
+              <TextField
+                label="Usuário"
+                variant="outlined"
+                fullWidth
+                required
+                value={email}
+                onChange={(e)=>setEmail(e.target.value)}
+                sx={{
+                  "& .MuiOutlinedInput-root": {
+                    borderRadius: "30px"
+                  },
+                  "& .MuiOutlinedInput-notchedOutline": {
+                    borderColor: "#E9A84A"
+                  },
+                  "&:hover .MuiOutlinedInput-notchedOutline": {
+                    borderColor: "#E9A84A"
+                  }
+                }}
+              />
 
-                            <Button
-                                type="submit"
-                                variant="contained"
-                                fullWidth
-                                disabled={loading}
-                            >
-                                {loading ? "Carregando..." : "Entrar"}
-                            </Button>
+              <TextField
+                label="Senha"
+                type="password"
+                variant="outlined"
+                fullWidth
+                required
+                value={password}
+                onChange={(e)=>setPassword(e.target.value)}
+                sx={{
+                  "& .MuiOutlinedInput-root": {
+                    borderRadius: "30px"
+                  },
+                  "& .MuiOutlinedInput-notchedOutline": {
+                    borderColor: "#E9A84A"
+                  }
+                }}
+              />
 
-                        </form>
+              <Button
+                type="submit"
+                fullWidth
+                disabled={loading}
+                sx={{
+                  borderRadius: "30px",
+                  py: 1.5,
+                  fontWeight: "bold",
+                  backgroundColor: "#E9A84A",
+                  color: "#000",
+                  "&:hover": {
+                    backgroundColor: "#1F3C88",
+                    color: "#fff"
+                  }
+                }}
+              >
+                {loading ? "Carregando..." : "Entrar"}
+              </Button>
 
-                        <div className="text-center">
-                            <Link href="/register">
-                                Não tem conta? Cadastre-se
-                            </Link>
-                        </div>
+            </form>
 
-                    </CardContent>
-                </Card>
+            <Typography variant="body2" align="center">
+              Não tem cadastro?{" "}
+              <Link href="/register">
+                Clique aqui
+              </Link>
+            </Typography>
 
-            </Container>
-        </div>
-    )
+          </CardContent>
+
+        </Card>
+
+      </Container>
+
+    </Box>
+  )
 }

@@ -1,3 +1,4 @@
+import { AboutSection } from '../../components/AboutSection'
 import { Hero } from '../../components/Hero'
 import { RoomsSection } from '../../components/RoomsSection'
 import './home.css'
@@ -8,6 +9,7 @@ export default function Home(){
         <Box className="home-container">
             <Hero />
             <RoomsSection />
+            <AboutSection />
         </Box>
     )
 }

@@ -35,9 +35,7 @@ export default function Dashboard() {
 
   const [currentTab, setCurrentTab] = useState(0)
 
-  /* =============================
-     QUERIES
-  ============================= */
+  /* Queries */
 
   const { data: rooms } = useQuery({
     queryKey: ["admin-rooms"],
@@ -76,9 +74,7 @@ export default function Dashboard() {
     }
   })
 
-  /* =============================
-     DASHBOARD OVERVIEW
-  ============================= */
+  /* Overview */
 
   const renderOverview = () => {
 
@@ -123,7 +119,7 @@ export default function Dashboard() {
 
         </Grid>
 
-        {/* ÚLTIMAS RESERVAS */}
+        {/* Últimas Reservas */}
 
         <Paper sx={{ p:4, borderRadius:3 }}>
 
@@ -177,9 +173,7 @@ export default function Dashboard() {
 
   }
 
-  /* =============================
-     SALAS
-  ============================= */
+  /* Salas */
 
   const renderRooms = () => {
 
@@ -244,9 +238,7 @@ export default function Dashboard() {
 
   }
 
-  /* =============================
-     RESERVAS
-  ============================= */
+  /* Reservas */
 
   const renderBookings = () => {
 
@@ -290,9 +282,7 @@ export default function Dashboard() {
 
   }
 
-  /* =============================
-     USERS
-  ============================= */
+  /* Usuários */
 
   const renderUsers = () => {
 
@@ -338,9 +328,7 @@ export default function Dashboard() {
 
   }
 
-  /* =============================
-     RENDER
-  ============================= */
+  /* Render */
 
   const renderContent = () => {
 
@@ -372,7 +360,7 @@ export default function Dashboard() {
         <Box sx={{p:3}}>
 
           <Typography variant="h6" fontWeight="bold">
-            Admin Hub
+            EspaçoTech Admin
           </Typography>
 
         </Box>
